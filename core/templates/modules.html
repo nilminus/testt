@@ -1,0 +1,68 @@
+{% extends "layout.html" %} {% set active_page = "modules" %} {% block content %}
+
+<!-- Page title -->
+<div class="d-flex flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+<h2 class="font-weight-light mr-4 ml-auto">Modules</h2>
+<button type="button" class="btn btn-icon mr-auto mt-1 p-1" data-toggle="modal" data-target="#uploadModal">
+	<i data-feather="plus-circle"></i>
+</button>
+</div>
+
+{% if not modules %}
+<h6 class="text-center">No modules added</h6>
+{% else %}
+<table class="table table-dark table-responsive table-striped table-borderless">
+	<thead>
+		<tr>
+			<th>#</th>
+			<th>Description</th>
+			<th>Module Size</th>
+			<th>Date Added</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for mod in modules %}
+		<tr>
+			<td>{{ mod[0] }}</td>
+			<td>
+				<b>{{ mod[2] }}</b>
+			</td>
+			<td>{{ convert_size(mod[3]) }}</td>
+			<td>
+				{{ mod[1] }}
+				<a class="text-danger float-right" style="margin-left: 40px" href="/modules/{{ mod[0] }}/delete">
+					<span>
+						<i data-feather="trash"></i>
+					</span>
+				</a>
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+{% endif %}
+
+<!-- New Module -->
+<div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="uploadModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content p-3">
+			<div class="modal-header">
+				<h5 class="modal-title ml-auto mr-auto" id="exampleModalLabel">Add Module</h5>
+			</div>
+			<form name='addModule' id='ModuleForm' enctype="multipart/form-data" class="form" action="" method='POST'>
+				<input name=_csrf_token type=hidden value="{{ csrf_token() }}">
+				<div class="modal-body">
+					<input type='text' class="form-control" id='name' placeholder='Module name' name='name' required>
+					<hr width="50%" align="left">
+					<input class="m-auto" type="file" name="file" id="file" required>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+					<input type='submit' class="btn btn-primary" name='submit' id='submit' value='Add Module'>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+<h5 class="mr-auto ml-auto mt-3 mb-3">Radar for {{ target_name }}</h5>
+
+<div class="container p-3" style="max-height: 40em; overflow-y: scroll;">
+    {% if not callbacks %}
+    <h6 class="text-center">No callback history</h6>
+    {% else %}
+    <table style="overflow: visible" id="callbacks" class=" m-0 table table-dark text-center table-striped table-borderless mr-auto ml-auto">
+        <thead>
+            <tr>
+                <th>Source</th>
+                <th>Address</th>
+                <th>Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in callbacks %}
+            <tr>
+                <td>{{ row[1] }}</td>
+                <td>{{ row[2] }}</td>
+                <td>{{ row[3] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+</div>
+<script>
+    feather.replace()
+</script>

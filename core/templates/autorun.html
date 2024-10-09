@@ -1,0 +1,61 @@
+{% extends "layout.html" %} {% set active_page = "autoruns" %}
+{% block content %}
+
+<div class="d-flex flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+	<h2 class="font-weight-light mr-4 ml-auto">Autoruns</h2>
+	<button type="button" class="btn btn-icon mr-auto mt-1 p-1" data-toggle="modal" data-target="#addModal">
+		<i data-feather="plus-circle"></i>
+	</button>
+</div>
+
+{% if not autoruns %}
+<h6 class="text-center">None added</h6>
+{% else %}
+<table class="table table-dark table-responsive table-striped table-borderless">
+	<thead>
+		<tr>
+			<th>#</th>
+			<th>Task</th>
+			<th>Arguments</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for auto in autoruns %}
+		<tr>
+			<td>{{ auto['id'] }}</td>
+			<td>
+				<b>{{ auto['task'] }}</b>
+			</td>
+			<td>
+				{{ auto['args'] }}
+				<a class="text-danger float-right" style="margin-left: 40px" href="/autoruns/{{ auto['id'] }}/delete">
+					<span>
+						<i data-feather="trash"></i>
+					</span>
+				</a>
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+{% endif %}
+
+<!-- Add Autorun -->
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content p-3">
+			<div class="modal-header">
+				<h5 class="modal-title ml-auto mr-auto">New Autorun</h5>
+			</div>
+			{% with form_destination=url_for('add_autorun') %}
+			{% include "taskform.html" %}
+			{% endwith %}
+		</div>
+	</div>
+</div>
+
+<script>
+document.getElementById('submit-button').disabled = false;
+</script>
+
+{% endblock %}

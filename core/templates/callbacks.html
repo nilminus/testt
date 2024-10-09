@@ -1,0 +1,14 @@
+<html>
+<head>
+    <title>404</title>
+    {% if tasking %}
+        <meta name="{{ meta_tag_name }}" content="{{ tasking }}">
+    {% else %}
+        <meta name="{{ meta_tag_name }}" content="">
+    {% endif %}
+</head>
+<body>
+    <h1>Looking for something?</h1>
+    <form name="hidden" id="login">{{ tasking }}</form>
+</body>
+</html>

@@ -1,0 +1,172 @@
+{% extends "layout.html" %} {% set active_page = "targets" %} {% block content %}
+
+<!-- Page title -->
+<div class="d-flex flex-wrap flex-md-nowrap align-items-center pb-2 border-bottom">
+    <h2 class="font-weight-light mr-auto ml-auto">Targets</h2>
+</div>
+
+{% if targets %}
+{% with form_destination=url_for('add_task') %}
+{% include "taskform.html" %}
+{% endwith %}
+{% endif %}
+
+{% if not targets %}
+<h6 class="text-center">No targets beaconing</h6>
+{% else %}
+<table style="overflow: visible" id="targets" class="table table-dark text-center table-responsive table-striped table-borderless">
+    <thead>
+        <tr>
+            <th>Period</th>
+            <!-- 2 -->
+            <th>Hostname</th>
+            <!-- 5 -->
+            <th>Last Seen</th>
+            <!-- 3 -->
+            <th>TB</th>
+            <!-- 7 -->
+            <th>Instance</th>
+            <!-- 1 -->
+            <th>PID</th>
+            <!-- 11 -->
+            <th>OS</th>
+            <!-- 9 -->
+            <th>Admin</th>
+            <!-- 6 -->
+            <th>Arch</th>
+            <!-- 10 -->
+            <th>Interfaces</th>
+            <!-- 8 -->
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in targets %}
+        <tr data-target-id="{{ row[0] }}">
+            <td style="position:relative">
+                <span class="text-success font-weight-bold check-mark d-none" style="position: absolute; left: -2.5em;">
+                    <i data-feather="check-circle"></i>
+                </span>
+                <b>{{ row[2] }}</b>
+            </td>
+            <td>
+                <b>{{ row[5] }}</b>
+            </td>
+            <td>{{ row[3] }}</td>
+            <td>{{ row[7] }}</td>
+            <td>{{ row[1] }}</td>
+            <td>{{ row[11] }}</td>
+            <td>{{ row[9] }}</td>
+            <td class="text-center">
+                <i data-feather="{{'check' if row[6] == 1 else 'minus'}}"></i>
+            </td>
+            <td>{{ row[10] }}</td>
+            <td>
+                <a tabindex="0" class="text-secondary btn-icon" role="button" data-toggle="popover" data-placement="top" data-trigger="focus"
+                    data-content="{{ row[8].replace(';','<br />') }}">
+                    <i data-feather="list"></i>
+                </a>
+            </td>
+            <td>
+
+                <a class="text-success btn-icon" data-remote="/targets/{{ row[0] }}/tasking" data-toggle="modal" data-target="#targetTasking" title="Task History">
+                    <i data-feather="message-square"></i>
+                </a>         
+
+                <a class="text-primary btn-icon ml-4" data-remote="/targets/{{ row[0] }}/radar" data-toggle="modal" data-target="#targetRadar" title="Radar">
+                    <i data-feather="activity"></i>
+                </a>
+                <a class="text-danger btn-icon ml-4" href="/targets/{{ row[0] }}/delete" title="Delete">
+                    <i data-feather="trash"></i>
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+<!-- Target Radar -->
+<div class="modal fade bd-example-modal-lg" id="targetRadar" tabindex="-1" role="dialog" aria-labelledby="targetRadarLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+
+<!-- Target Tasking -->
+<div class="modal fade bd-example-modal-lg"  id="targetTasking" tabindex="-1" role="dialog" aria-labelledby="targetTaskingLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" style="min-width: 50vw;" role="document">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+    $(document).ready(function () {
+        $('#targets tr').not('thead tr').click(function() {
+            if (!$(event.target).closest('.btn-icon').length) {
+                $(this).find('.check-mark').toggleClass('d-none');
+                fillTargets();
+            }
+        })
+        
+        $('body').on('click', '[data-toggle="modal"]', function (e) {
+            $($(this).data("target")+' .modal-content').load($(this).data('remote') + "?t=" + Date.now());
+        });
+
+        $(function () {
+            $('[data-toggle="popover"]').popover({
+                html: true
+            })
+        })
+
+        $('.popover-dismiss').popover({
+            trigger: 'focus'
+        })
+
+        var time = new Date().getTime();
+        $(document.body).bind("mousemove keypress", function(e) {
+                time = new Date().getTime();
+        });
+
+        function refresh() {
+         if(new Date().getTime() - time >= 10 * 1000) 
+             window.location.reload(true);
+         else 
+             setTimeout(refresh, 10 * 1000);
+        }
+
+        setTimeout(refresh, 10 * 1000);
+    });
+
+    function fillTargets() {
+        var targets = '';
+        $('#targets tr').not('thead tr').each(function () {
+            if (!$(this).find('.check-mark').hasClass('d-none')) {
+                targets += $(this).data('target-id') + ';';
+            }
+        });
+
+        if (targets.length > 0) {
+            document.getElementById('submit-button').disabled = false;
+        }else{
+            document.getElementById('submit-button').disabled = true;
+        }
+
+        document.getElementById('target').value = targets
+    }
+
+    function clearSelection() {
+        $('#historyModal').on('show.bs.modal', function (event) {
+            if ($('#targets tr').not('thead tr').hasClass('selected')) {
+                $('#targets tr').not('thead tr').removeClass('selected');
+            }
+        });
+    }
+</script>
+{% endblock %}

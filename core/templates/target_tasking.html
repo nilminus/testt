@@ -1,0 +1,59 @@
+<h5 class="mr-auto ml-auto mt-3 mb-3">Tasking for {{ target_name }}</h5>
+
+<div class="container p-3" style="max-height: 40em; overflow-y: scroll;">
+    {% if not tasking %}
+    <h6 class="text-center">No tasking history</h6>
+    {% else %}
+    <table id="tasking" class="table table-dark text-center table-striped table-borderless mr-auto ml-auto">
+        <thead>
+            <tr>
+                <th>Status</th>
+                <th>Task</th>
+                <th>Arguments</th>
+                <th>Finish</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in tasking %}
+            <tr>
+                <td>
+                    {% if task['status'] == 'pending' %}
+                    <span class="text-secondary" title="Pending">
+                        <i data-feather="inbox"></i>
+                    </span>
+                    {% elif task['status'] == 'sent' %}
+                    <span class="text-info" title="Sent">
+                        <i data-feather="send"></i>
+                    </span>
+                    {% elif task['status'] == 'completed' %}
+                    <span class="text-success" title="Completed">
+                        <i data-feather="check-circle"></i>
+                    </span>
+                    {% else %} Unknown {% endif %}
+                </td>
+                <td>{{ task['task'] }}</td>
+                <td>{{ task['args'] }}</td>
+                <td>
+                    {% if task['completed'] %} {{ task['completed'] }} {% else %}
+                    <a class="text-danger btn-icon" href="/tasks/{{ task['id'] }}/delete">
+                        <i data-feather="trash"></i>
+                    </a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% if task['return_data'] and task['completed'] %}
+            <tr>
+                <td colspan="4">
+                    {% set min_height = (task['return_data']).split('\n')|length * 3 %}
+                    {% set min_height = 300 if min_height > 300 else min_height %}
+                    <textarea class="form-control" style="min-height: {{min_height}}px; test: 345;" readonly="readonly">{{ task['return_data'].strip('\n') }}</textarea>
+                </td>
+            </tr>
+            {% endif %} {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+</div>
+<script>
+    feather.replace()
+</script>

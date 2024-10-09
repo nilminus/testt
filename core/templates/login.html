@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="icon" href="/favicon.ico">
+
+  <title>Login</title>
+
+  <link href="/static/content/bootstrap.min.css" rel="stylesheet">
+  <link href="static/content/main.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <div class="container">
+
+    <div class="text-center mt-4 mb-4">
+      <img src="/static/images/logo.png">
+    </div>
+
+    <form class="form-signin" action="" method='POST'>
+      <input name=_csrf_token type=hidden value="{{ csrf_token() }}">
+      <input type="username" name="username" id="username" class="form-control {{'input-error' if failed }}" placeholder="whoami" value="{{ username }}" required>
+      <input type="password" name="password" id="password" class="form-control" placeholder="pwd" required>
+      <button class="btn btn-medium btn-primary btn-block w-50 m-auto" type="submit">Login</button>
+    </form>
+
+  </div>
+</body>
+
+</html>

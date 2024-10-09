@@ -1,0 +1,8 @@
+click
+Flask
+Jinja2
+MarkupSafe
+PyMySQL
+Werkzeug
+termcolor
+flask_login

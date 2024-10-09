@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="/favicon.ico">
+
+    <title>Throwback</title>
+
+    <link href="/static/content/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/content/main.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="d-flex w-75 flex-column p-3" style="min-height: 100vh;">
+
+        <!-- Navigation Bar -->
+        {% set navigation_bar = [
+            ('targets', 'home'),
+            ('modules', 'package'),
+            ('autoruns', 'rotate-cw')
+            ]
+        -%}
+        {% set active_page = active_page|default('targets') -%}
+              
+        <header class="masthead mb-4 mr-1 ml-1 pt-4">
+            <div class="inner">
+                <div class="masthead-brand">
+                    <img src="/static/images/logo.png" class="w-50 h-50">
+                </div>
+                <nav class="nav nav-masthead justify-content-center">
+                    {% for id, icon in navigation_bar %}
+                    <a class="nav-link {{'active' if id == active_page}}" href="{{url_for(id)}}" title="{{id|title}}">
+                        <i data-feather="{{icon}}"></i>
+                    </a>
+                    {% endfor %}
+                    <a class="nav-link link-logout" style="margin-left: 10rem" href="{{url_for('logout')}}" title="Logout">
+                        <span style="position:relative; bottom: .35rem">{{current_user.username}}</span>
+                        <i data-feather="log-out"></i>
+                    </a>
+                </nav>
+            </div>
+        </header> 
+
+        <!-- Notification dialogs -->
+        {% set message = session.pop('message', None) %}
+        {% set error = session.pop('error', None) %}
+        {% if message %}<div class="alert alert-fixed alert-success fade show" role="alert" id="notification">{{ message }}</div>{% endif %}   
+        {% if error %}<div class="alert alert-fixed alert-danger fade show" role="alert" id="notification">{{ error }}</div>{% endif %}
+
+        <!-- Imported content -->
+        <main role="main" class="main inner cover mb-auto mt-4 mr-auto ml-auto">
+            {% block content %}
+            {% endblock %}
+        </main>
+
+        <!-- Footer -->
+        <footer class="text-center mastfoot mt-auto">
+            <div class="inner">
+                <p>Developed by <a href="https://silentbreaksecurity.com/">Silent Break Security</a>. Your prod is our dev.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Required Javascript -->
+    <script src="/static/scripts/jquery-3.3.1.min.js"></script>
+    <script src="/static/scripts/bootstrap.bundle.min.js"></script>
+
+    <!-- Icons -->
+    <script src="/static/scripts/feather.min.js"></script>
+    <script>
+        feather.replace()
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            window.setTimeout(function () {
+                $(".alert").fadeTo(500, 0).slideUp(500, function () {
+                    $(this).remove();
+                });
+            }, 2500);
+        });
+    </script>
+
+    {% block script %}
+    {% endblock %}
+</body>
+
+</html>

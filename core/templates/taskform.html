@@ -1,0 +1,84 @@
+<form class="form-inline m-4" action="{{ form_destination }}" method="POST">
+    <input name=_csrf_token type=hidden value="{{ csrf_token() }}">
+    <input type='hidden' name='target' id='target' value=''>
+    <div class="form-group row justify-content-center flex-nowrap w-100 ml-auto mr-auto">
+
+        <label class="sr-only" for="taskSelect">Task</label>
+        <select class="form-control col-3" onchange='populate_defaults();' name='taskSelect' id="taskSelect">
+            {% for id, name, arg1, arg2 in taskcodes %}
+            <option {{ 'selected' if loop.index==0 }} value="{{id}}" arg1-default="{{arg1}}" arg2-default="{{arg2}}">{{name}}</option>
+            {% endfor %}
+        </select>
+
+        {% set disabled = taskcodes[0][2]=='disabled' %}
+
+        <label class="sr-only" for="arg1Entry">Argument1</label>
+        <input {{ 'required' if not disabled}} type="text" name="arg1" class="form-control ml-3 col {{ 'd-none' if disabled }}" id="arg1Entry"
+            placeholder="{{ taskcodes[0][2] if not disabled }}"> 
+
+        <select class="form-control ml-3 col {{ 'd-none' if 'Module' not in taskcodes[0][1] }}" name='module' id="module">
+            {% for id, dateadded, name, size in modules %}
+            <option {{ 'selected' if loop.index==0 }} value="{{id}}">{{name}}</option>
+            {% endfor %}
+        </select>
+
+        {% set disabled = taskcodes[0][3]=='disabled' %}
+
+        <label class="sr-only" for="arg2Entry">Argument2</label>
+        <input {{ 'required' if not disabled}} type="text" name="arg2" class="form-control ml-3 col {{ 'd-none' if disabled }}" id="arg2Entry"
+            placeholder="{{ taskcodes[0][3] if not disabled }}">
+
+        <button type="submit" id="submit-button" class="btn btn-icon mt-1" disabled>
+            <i data-feather="arrow-right-circle"></i>
+        </button>
+    </div>
+</form>
+
+{% block formscript %}
+<script>
+    function populate_defaults() {
+        var taskSelector = document.getElementById('taskSelect');
+
+        var arg1Entry = document.getElementById('arg1Entry');
+        var arg2Entry = document.getElementById('arg2Entry');
+        var moduleSelect = document.getElementById('module');
+
+        arg1Entry.value = '';
+        arg2Entry.value = '';
+        arg1Entry.placeholder = '';
+        arg2Entry.placeholder = '';
+        arg1Entry.required = '';
+        arg2Entry.required = '';
+        arg1Entry.classList.remove('d-none');
+        arg2Entry.classList.remove('d-none');
+        moduleSelect.classList.remove('d-none');
+
+        for (var i = 0; i < taskSelector.children.length; i++) {
+            var child = taskSelector.children[i];
+            if (taskSelector.value == child.value) {
+                var arg1Default = child.getAttribute('arg1-default');
+                var arg2Default = child.getAttribute('arg2-default');
+
+                if (arg1Default != "module"){
+                    moduleSelect.classList.add('d-none');
+                }
+                
+                if (arg1Default == "disabled" || arg1Default == "module" ) {
+                    arg1Entry.classList.add('d-none');
+                }          
+                else {
+                    arg1Entry.required = true;
+                    arg1Entry.placeholder = arg1Default;
+                }
+
+                if (arg2Default == "disabled") {
+                    arg2Entry.classList.add('d-none');
+                } else {
+                    arg2Entry.required = true;
+                    arg2Entry.placeholder = arg2Default;
+                }
+            }
+        }
+    }
+</script>
+{% endblock %}
